@@ -90,7 +90,7 @@
         </div>
         <div class="boundary-map-container">
           <img
-            src="../../assets/BounderyMap.png"
+            :src="boundaryMapImage"
             alt="Boundary Map"
             class="boundary-map-image"
           />
@@ -102,6 +102,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import boundaryMapImage from "../../assets/BounderyMap.png";
 
 const subtitle = null;
 
