@@ -88,6 +88,13 @@
             <p>This address is not in an eligible voting district.</p>
           </div>
         </div>
+        <div class="boundary-map-container">
+          <img
+            src="../../assets/BounderyMap.png"
+            alt="Boundary Map"
+            class="boundary-map-image"
+          />
+        </div>
       </div>
     </div>
   </section>
@@ -595,6 +602,22 @@ onUnmounted(() => {
 .address-search-container {
   position: relative;
   max-width: 800px;
+}
+
+.boundary-map-container {
+  margin-top: 3rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.boundary-map-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
 }
 
 .input-instruction {
