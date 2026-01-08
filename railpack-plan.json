@@ -1,0 +1,20 @@
+{
+  "provides": [
+    {
+      "name": "node"
+    }
+  ],
+  "requires": [
+    {
+      "name": "node"
+    }
+  ],
+  "phases": {
+    "build": {
+      "cmds": [
+        "npm ci",
+        "npm run build"
+      ]
+    }
+  }
+}
