@@ -25,8 +25,12 @@ COPY --from=builder /app/dist /app/dist
 # Copy Caddyfile
 COPY Caddyfile /Caddyfile
 
-# Expose port
+# Copy startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Expose port (Railway will set PORT env var)
 EXPOSE 80
 
-# Start Caddy
-CMD ["caddy", "run", "--config", "/Caddyfile", "--adapter", "caddyfile"]
+# Start Caddy using startup script
+CMD ["/start.sh"]
