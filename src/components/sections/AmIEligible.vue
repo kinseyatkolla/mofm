@@ -6,31 +6,72 @@
         <p v-if="subtitle" class="section-subtitle">{{ subtitle }}</p>
       </div>
       <div class="section-content">
-        <!-- No external API loader needed - using free LocationIQ API -->
-
         <div class="address-search-container">
-          <input
-            v-model="addressInput"
-            type="text"
-            class="address-input"
-            placeholder="Enter your address to check eligibility..."
-            @input="handleInput"
-            @focus="handleFocus"
-            @blur="handleBlur"
-          />
-
-          <div
-            v-if="showSuggestions && filteredAddresses.length > 0"
-            class="address-suggestions"
-          >
-            <div
-              v-for="(address, index) in filteredAddresses"
-              :key="index"
-              class="suggestion-item"
-              @click="selectAddress(address)"
-            >
-              {{ address }}
+          <p class="input-instruction">
+            Enter your address to check eligibility...
+          </p>
+          <div class="input-wrapper">
+            <input
+              v-model="addressInput"
+              type="text"
+              class="address-input"
+              :class="{ 'has-error': hasError }"
+              placeholder="123 Main St"
+              @input="handleInput"
+              @focus="handleFocus"
+              @blur="handleBlur"
+              @keydown.enter="handleEnter"
+            />
+            <div v-if="isLoading" class="loading-indicator">
+              <span class="spinner"></span>
             </div>
+            <button
+              v-if="!isLoading && addressInput.trim().length > 0"
+              type="button"
+              class="clear-button"
+              @click="clearInput"
+              aria-label="Clear address"
+            >
+              <span class="clear-icon">×</span>
+            </button>
+            <div
+              v-if="showSuggestions && filteredAddresses.length > 0"
+              class="address-suggestions"
+              @mousedown.prevent
+              @mouseenter="isMouseInSuggestions = true"
+              @mouseleave="isMouseInSuggestions = false"
+            >
+              <div
+                v-for="(address, index) in filteredAddresses"
+                :key="index"
+                class="suggestion-item"
+                @mousedown="selectAddress(address)"
+              >
+                {{ address }}
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="search-button"
+            :disabled="
+              isLoading ||
+              !addressInput.trim() ||
+              addressInput.trim().length < 2
+            "
+            @click="performSearch"
+            aria-label="Search address"
+          >
+            <span v-if="!isLoading">Search</span>
+            <span v-else class="search-button-loading">Searching...</span>
+          </button>
+          <p class="election-department-info">
+            You can call the election department to check at
+            <a href="tel:7195758683">(719) 575-8683</a>
+          </p>
+
+          <div v-if="errorMessage" class="error-message">
+            {{ errorMessage }}
           </div>
 
           <div
@@ -40,7 +81,7 @@
             <strong>You are Eligible to Vote!</strong>
           </div>
           <div
-            v-if="showEligibleMessage && !isEligible"
+            v-if="showEligibleMessage && !isEligible && !isLoading"
             class="not-eligible-message"
           >
             <strong>Not Eligible</strong>
@@ -57,6 +98,14 @@ import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 const subtitle = null;
 
+// Track mouse interaction to prevent blur from closing suggestions prematurely
+const isMouseInSuggestions = ref(false);
+
+// Loading and error states
+const isLoading = ref(false);
+const errorMessage = ref("");
+const hasError = computed(() => !!errorMessage.value);
+
 // Function to strip unit designations and numbers for anonymity
 const stripUnitInfo = (address) => {
   return (
@@ -70,6 +119,32 @@ const stripUnitInfo = (address) => {
       .replace(/\s+FRNT.*$/i, "") // Remove "FRNT" (front)
       .trim()
   );
+};
+
+// Extract street address from LocationIQ response
+const extractStreetAddress = (locationIQItem) => {
+  // LocationIQ returns address components in the address object
+  if (locationIQItem.address) {
+    const addr = locationIQItem.address;
+    const parts = [];
+
+    // Build street address from components
+    if (addr.house_number) parts.push(addr.house_number);
+    if (addr.road) parts.push(addr.road);
+    if (addr.house_name) parts.push(addr.house_name);
+
+    // If we have components, use them
+    if (parts.length > 0) {
+      return parts.join(" ");
+    }
+  }
+
+  // Fallback: extract from display_name
+  // Format is typically: "123 Main St, Manitou Springs, CO 80829, USA"
+  const displayName = locationIQItem.display_name || "";
+  // Extract everything before the first comma (street address)
+  const match = displayName.match(/^([^,]+)/);
+  return match ? match[1].trim() : displayName;
 };
 
 // List of eligible residential addresses
@@ -166,48 +241,34 @@ const eligibleAddresses = [
 const addressInput = ref("");
 const showSuggestions = ref(false);
 const selectedAddress = ref("");
-const locationIQSuggestions = ref([]); // Stores filtered suggestions from cached address list
+const locationIQSuggestions = ref([]); // Stores LocationIQ API suggestions
 const hasSelectedAddress = ref(false); // Track if user has selected an address or finished entering
-const cachedAddressList = ref([]); // Full list of addresses loaded from LocationIQ on page load
-const isLoadingAddresses = ref(false); // Track if we're loading the address list
 
 // Get LocationIQ API key from environment variable (free tier: 10,000 requests/day)
 // Sign up at https://locationiq.com/ - it's free!
 const LOCATIONIQ_API_KEY = import.meta.env.VITE_LOCATIONIQ_API_KEY || "";
 
-// Calculate relevance score for address matching
-const calculateRelevanceScore = (address, query) => {
-  const addressUpper = address.toUpperCase();
-  const queryUpper = query.toUpperCase();
-  let score = 0;
-
-  // Exact match gets highest score
-  if (addressUpper === queryUpper) return 1000;
-
-  // Starts with query gets high score
-  if (addressUpper.startsWith(queryUpper)) score += 500;
-
-  // Contains query gets medium score
-  if (addressUpper.includes(queryUpper)) score += 200;
-
-  // Word boundary matches get bonus
-  const queryWords = queryUpper.split(/\s+/);
-  queryWords.forEach((word) => {
-    if (word.length > 2) {
-      const regex = new RegExp(`\\b${word}`, "i");
-      if (regex.test(addressUpper)) score += 50;
-    }
-  });
-
-  // Shorter addresses (more specific) get slight bonus
-  if (addressUpper.length < 50) score += 10;
-
-  return score;
-};
-
 // Normalize address for comparison - strips unit info and normalizes street suffixes
 const normalizeAddress = (address) => {
+  if (!address) return "";
+
   let normalized = stripUnitInfo(address);
+
+  // Remove common city/state/zip suffixes that might be in LocationIQ responses
+  // Remove everything after patterns like ", MANITOU SPRINGS" or ", CO" or ", 80829"
+  normalized = normalized
+    .replace(/,\s*MANITOU\s+SPRINGS.*$/i, "")
+    .replace(/,\s*CO.*$/i, "")
+    .replace(/,\s*\d{5}.*$/i, "")
+    .replace(/,\s*USA.*$/i, "")
+    .trim();
+
+  // Normalize directional prefixes (N, S, E, W, NORTH, SOUTH, etc.)
+  normalized = normalized
+    .replace(/^\s*(N|NORTH)\s+/i, "")
+    .replace(/^\s*(S|SOUTH)\s+/i, "")
+    .replace(/^\s*(E|EAST)\s+/i, "")
+    .replace(/^\s*(W|WEST)\s+/i, "");
 
   // Normalize street suffixes
   normalized = normalized
@@ -220,6 +281,7 @@ const normalizeAddress = (address) => {
     .replace(/\b(CT|COURT)\b/gi, "CT")
     .replace(/\b(LN|LANE)\b/gi, "LN")
     .replace(/\b(TRL|TRAIL)\b/gi, "TRL")
+    .replace(/\b(WAY)\b/gi, "WAY")
     // Normalize multiple spaces to single space
     .replace(/\s+/g, " ")
     .trim();
@@ -227,126 +289,109 @@ const normalizeAddress = (address) => {
   return normalized;
 };
 
-// Load full address list from LocationIQ on page load (one-time API call)
-const loadAddressList = async () => {
-  if (!LOCATIONIQ_API_KEY || cachedAddressList.value.length > 0) {
-    return; // Already loaded or no API key
-  }
-
-  isLoadingAddresses.value = true;
-
-  try {
-    // Manitou Springs bounding box coordinates (expanded ~3-4 miles in each direction)
-    const manitouSpringsViewbox = "-104.9600,38.7500,-104.8000,38.9100";
-
-    // Use generic search queries to get as many addresses as possible
-    // Search for just "Manitou Springs" to get a broad set of addresses
-    // Also try numeric searches to catch numbered addresses
-    const searchQueries = [
-      "Manitou Springs CO", // Broad search for the city
-      "1 Manitou Springs", // Get addresses starting with numbers
-      "10 Manitou Springs", // Get more numbered addresses
-      "100 Manitou Springs", // Get higher numbered addresses
-    ];
-
-    const baseUrls = [
-      `https://us1.locationiq.com/v1/search`,
-      `https://api.locationiq.com/v1/search`,
-    ];
-
-    const allAddresses = new Set();
-
-    // Try to get addresses using different generic search queries
-    for (const query of searchQueries) {
-      for (const baseUrl of baseUrls) {
-        try {
-          // Use a high limit to get as many results as possible
-          const url = `${baseUrl}?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(
-            query
-          )}&format=json&limit=100&addressdetails=1&countrycodes=us&statecode=CO&viewbox=${manitouSpringsViewbox}&bounded=1`;
-
-          const response = await fetch(url);
-
-          if (response.ok) {
-            const data = await response.json();
-            if (Array.isArray(data)) {
-              data.forEach((item) => {
-                const address = item.display_name || "";
-                const normalized = stripUnitInfo(address).toUpperCase();
-                // Only add if it's actually an address (contains a number and street info)
-                if (normalized.length > 0 && /\d/.test(normalized)) {
-                  allAddresses.add(normalized);
-                }
-              });
-            }
-            break; // Success, move to next query
-          }
-
-          if (response.status === 429) {
-            // Rate limited - stop trying and use what we have
-            if (import.meta.env.DEV) {
-              console.warn(
-                "LocationIQ API: Rate limited while loading address list"
-              );
-            }
-            break;
-          }
-        } catch (error) {
-          // Continue to next endpoint
-          continue;
-        }
-      }
-
-      // Small delay between requests to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
-
-    cachedAddressList.value = Array.from(allAddresses).sort();
-
-    if (import.meta.env.DEV) {
-      console.log(
-        `Loaded ${cachedAddressList.value.length} addresses from LocationIQ`
-      );
-    }
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn("Error loading address list:", error);
-    }
-  } finally {
-    isLoadingAddresses.value = false;
-  }
-};
-
-// Filter cached address list based on user input (client-side only, no API calls)
-const filterAddressSuggestions = (input) => {
+// Load address suggestions from LocationIQ (free API)
+const loadLocationIQSuggestions = async (input) => {
   if (!input || input.length < 2) {
     locationIQSuggestions.value = [];
+    showSuggestions.value = false;
+    isLoading.value = false;
+    errorMessage.value = "";
     return;
   }
 
-  if (cachedAddressList.value.length === 0) {
-    // If address list hasn't loaded yet, return empty
+  if (!LOCATIONIQ_API_KEY) {
     locationIQSuggestions.value = [];
+    showSuggestions.value = false;
+    isLoading.value = false;
+    errorMessage.value = "";
+    // No error message for missing API key - suggestions are optional
     return;
   }
 
-  const normalizedInput = input.toUpperCase();
+  isLoading.value = true;
+  errorMessage.value = "";
 
-  // Filter and score addresses
-  const suggestions = cachedAddressList.value
-    .map((address) => ({
-      address,
-      score: calculateRelevanceScore(address, normalizedInput),
-    }))
-    .filter((item) => item.score > 0) // Only include addresses that match
-    .sort((a, b) => b.score - a.score) // Sort by relevance
-    .map((item) => item.address)
-    .slice(0, 10);
+  try {
+    // LocationIQ Search API (used for autocomplete-like functionality)
+    // Note: LocationIQ doesn't have a dedicated autocomplete endpoint, so we use search
+    // Filter to Manitou Springs, CO (80829) using viewbox and bounded parameters
+    // Manitou Springs bounding box coordinates (expanded ~3-4 miles in each direction)
+    const manitouSpringsViewbox = "-104.9600,38.7500,-104.8000,38.9100"; // Expanded Manitou Springs, CO bounding box
+    // Include "Manitou Springs" in query to prioritize local results
+    const queryWithCity = `${input} Manitou Springs CO`;
+    const url = `https://api.locationiq.com/v1/search.php?key=${LOCATIONIQ_API_KEY}&q=${encodeURIComponent(
+      queryWithCity
+    )}&format=json&limit=5&addressdetails=1&countrycodes=us&statecode=CO&viewbox=${manitouSpringsViewbox}&bounded=1`;
 
-  locationIQSuggestions.value = suggestions;
+    const response = await fetch(url);
 
-  if (suggestions.length > 0) {
-    showSuggestions.value = true;
+    if (!response.ok) {
+      // Handle specific error cases
+      if (response.status === 401) {
+        errorMessage.value =
+          "API authentication error. Please check your API key.";
+      } else if (response.status === 429) {
+        errorMessage.value = "Too many requests. Please try again in a moment.";
+      } else if (response.status === 404) {
+        // 404 is not really an error for search - just no results
+        locationIQSuggestions.value = [];
+        showSuggestions.value = false;
+        isLoading.value = false;
+        return;
+      } else {
+        errorMessage.value =
+          "Unable to fetch address suggestions. Please try again.";
+      }
+      locationIQSuggestions.value = [];
+      showSuggestions.value = false;
+      isLoading.value = false;
+      return;
+    }
+
+    const data = await response.json();
+
+    // Handle error responses from LocationIQ (they return error objects, not arrays)
+    if (data.error) {
+      errorMessage.value = data.error || "Error fetching address suggestions.";
+      locationIQSuggestions.value = [];
+      showSuggestions.value = false;
+      isLoading.value = false;
+      return;
+    }
+
+    if (Array.isArray(data) && data.length > 0) {
+      // Extract and format addresses from LocationIQ suggestions
+      locationIQSuggestions.value = data
+        .map((item) => {
+          // Extract street address from LocationIQ response
+          const streetAddress = extractStreetAddress(item);
+          return normalizeAddress(streetAddress);
+        })
+        .filter((addr) => addr.length > 0)
+        .slice(0, 5);
+
+      // Show suggestions when we have results
+      if (locationIQSuggestions.value.length > 0) {
+        showSuggestions.value = true;
+        errorMessage.value = ""; // Clear any previous errors
+      } else {
+        showSuggestions.value = false;
+      }
+    } else {
+      locationIQSuggestions.value = [];
+      showSuggestions.value = false;
+    }
+  } catch (error) {
+    // Handle network errors and other exceptions
+    errorMessage.value =
+      "Network error. Please check your connection and try again.";
+    if (import.meta.env.DEV) {
+      console.warn("LocationIQ API error:", error.message);
+    }
+    locationIQSuggestions.value = [];
+    showSuggestions.value = false;
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -384,59 +429,133 @@ let debounceTimer = null;
 const handleInput = () => {
   const input = addressInput.value.trim();
 
+  // Clear any previous errors
+  errorMessage.value = "";
+
   // Reset selection flag when user starts typing again
   hasSelectedAddress.value = false;
 
-  // Show suggestions if we have at least 2 characters (client-side filtering)
-  if (input.length >= 2) {
-    showSuggestions.value = true;
-  } else {
-    showSuggestions.value = false;
-  }
+  // Clear any existing suggestions when user types
+  showSuggestions.value = false;
+  locationIQSuggestions.value = [];
 
-  // Debounce LocationIQ API calls - longer delay to reduce API calls
+  // Clear debounce timer if it exists (no longer needed but keeping for cleanup)
   if (debounceTimer) {
     clearTimeout(debounceTimer);
+    debounceTimer = null;
   }
-
-  debounceTimer = setTimeout(() => {
-    if (input.length >= 2) {
-      // Use client-side filtering only - no API calls
-      filterAddressSuggestions(addressInput.value);
-    } else {
-      locationIQSuggestions.value = [];
-    }
-  }, 150); // Much shorter debounce since we're only filtering locally
 };
 
 const handleFocus = () => {
-  // Show suggestions if we have results already
+  // Show suggestions if we have LocationIQ results already from a previous search
   const input = addressInput.value.trim();
-  if (input.length >= 2) {
-    filterAddressSuggestions(input);
-    showSuggestions.value = locationIQSuggestions.value.length > 0;
+  if (
+    LOCATIONIQ_API_KEY &&
+    input.length >= 2 &&
+    locationIQSuggestions.value.length > 0
+  ) {
+    showSuggestions.value = true;
   } else {
     showSuggestions.value = false;
   }
 };
 
 const handleBlur = () => {
-  // Delay closing suggestions to allow click events on suggestion items to fire first
+  // Use a small delay to allow mousedown events on suggestions to fire first
+  // The @mousedown.prevent on the suggestions container helps prevent blur
   setTimeout(() => {
-    showSuggestions.value = false;
-    // Mark as selected when user blurs (finished entering address)
-    if (addressInput.value.trim().length > 0) {
-      hasSelectedAddress.value = true;
+    // Only close if mouse is not in suggestions area
+    if (!isMouseInSuggestions.value) {
+      showSuggestions.value = false;
+      // Mark as selected when user blurs (finished entering address)
+      if (addressInput.value.trim().length > 0) {
+        hasSelectedAddress.value = true;
+      }
     }
-  }, 200);
+  }, 150);
+};
+
+const handleEnter = () => {
+  // If there's exactly one suggestion, select it
+  if (filteredAddresses.value.length === 1) {
+    selectAddress(filteredAddresses.value[0]);
+  } else if (addressInput.value.trim().length > 0) {
+    // Otherwise, just check eligibility directly without searching
+    showSuggestions.value = false;
+    hasSelectedAddress.value = true;
+  }
+};
+
+const performSearch = () => {
+  const input = addressInput.value.trim();
+
+  if (!input || input.length < 2) {
+    return;
+  }
+
+  // Clear any previous errors
+  errorMessage.value = "";
+
+  // Reset selection flag
+  hasSelectedAddress.value = false;
+
+  // Clear any existing suggestions
+  showSuggestions.value = false;
+  locationIQSuggestions.value = [];
+
+  // Perform search if we have API key
+  if (LOCATIONIQ_API_KEY) {
+    loadLocationIQSuggestions(input);
+  } else {
+    // If no API key, just check eligibility directly
+    hasSelectedAddress.value = true;
+    showSuggestions.value = false;
+  }
 };
 
 const selectAddress = (address) => {
+  // Replace the input text with the selected address
   addressInput.value = address;
   selectedAddress.value = address;
   showSuggestions.value = false;
   hasSelectedAddress.value = true; // Mark as selected
   locationIQSuggestions.value = []; // Clear LocationIQ suggestions when selected
+  errorMessage.value = ""; // Clear any errors
+  isMouseInSuggestions.value = false;
+
+  // Blur the input to trigger eligibility check
+  setTimeout(() => {
+    const input = document.querySelector(".address-input");
+    if (input) {
+      input.blur();
+    }
+  }, 0);
+};
+
+const clearInput = () => {
+  addressInput.value = "";
+  selectedAddress.value = "";
+  showSuggestions.value = false;
+  hasSelectedAddress.value = false;
+  locationIQSuggestions.value = [];
+  errorMessage.value = "";
+  isLoading.value = false;
+  isMouseInSuggestions.value = false;
+
+  // Clear any pending debounce timer
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+    debounceTimer = null;
+  }
+
+  // Focus the input after clearing
+  // Use nextTick to ensure DOM is updated
+  setTimeout(() => {
+    const input = document.querySelector(".address-input");
+    if (input) {
+      input.focus();
+    }
+  }, 0);
 };
 
 // Close suggestions when clicking outside
@@ -445,20 +564,27 @@ watch(addressInput, (newVal) => {
     showSuggestions.value = false;
     locationIQSuggestions.value = [];
     hasSelectedAddress.value = false; // Reset when input is cleared
+    errorMessage.value = ""; // Clear errors when input is cleared
+    isLoading.value = false;
+    // Clear any pending debounce timer
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+      debounceTimer = null;
+    }
   }
 });
 
-// Load address list on component mount (one-time API call)
+// No special setup needed for LocationIQ - it's a simple REST API
 onMounted(() => {
-  if (LOCATIONIQ_API_KEY) {
-    // Load address list asynchronously in the background
-    loadAddressList();
-  }
+  // LocationIQ doesn't require any special initialization
+  // Just make sure the API key is set in .env if you want external suggestions
 });
 
 onUnmounted(() => {
+  // Clean up debounce timer
   if (debounceTimer) {
     clearTimeout(debounceTimer);
+    debounceTimer = null;
   }
 });
 </script>
@@ -471,9 +597,43 @@ onUnmounted(() => {
   max-width: 800px;
 }
 
+.input-instruction {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.election-department-info {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary, #666);
+  line-height: 1.6;
+}
+
+.election-department-info a {
+  color: var(--brand-primary, #4f357f);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.election-department-info a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .address-input {
   width: 100%;
   padding: 1.25rem;
+  padding-right: 3.5rem;
   font-size: 1.125rem;
   border: 2px solid var(--border-color, #ddd);
   border-radius: 8px;
@@ -483,13 +643,119 @@ onUnmounted(() => {
   box-sizing: border-box;
 }
 
+.search-button {
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  background-color: var(--brand-primary, #4f357f);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+  box-sizing: border-box;
+}
+
+.search-button:hover:not(:disabled) {
+  background-color: #3d2a63;
+  transform: translateY(-1px);
+}
+
+.search-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.search-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--border-color, #ddd);
+  color: var(--text-secondary, #999);
+}
+
+.search-button-loading {
+  display: inline-block;
+}
+
 .address-input:focus {
   outline: none;
-  border-color: var(--brand-primary, #0066cc);
+  border-color: var(--brand-primary, #4f357f);
+}
+
+.address-input.has-error {
+  border-color: #dc3545;
 }
 
 .address-input::placeholder {
   color: var(--text-secondary, #999);
+}
+
+.loading-indicator {
+  position: absolute;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color, #ddd);
+  border-top-color: var(--brand-primary, #4f357f);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.clear-button {
+  position: absolute;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  padding: 0;
+  color: var(--text-secondary, #999);
+}
+
+.clear-button:hover {
+  background-color: #f0f0f0;
+  color: var(--text-primary, #1a1a1a);
+}
+
+.clear-button:active {
+  transform: scale(0.95);
+  background-color: #e0e0e0;
+}
+
+.clear-icon {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 300;
+  display: block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  color: #856404;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .address-suggestions {
@@ -506,6 +772,7 @@ onUnmounted(() => {
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-top: -2px;
+  margin-bottom: 0;
 }
 
 .suggestion-item {
@@ -582,9 +849,48 @@ onUnmounted(() => {
 }
 
 @media (min-width: 768px) {
+  .input-instruction {
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .election-department-info {
+    font-size: 1rem;
+    margin-top: 1.25rem;
+  }
+
+  .input-wrapper {
+    margin-bottom: 1.25rem;
+  }
+
   .address-input {
     font-size: 1.25rem;
     padding: 1.5rem;
+    padding-right: 4rem;
+  }
+
+  .search-button {
+    font-size: 1.25rem;
+    padding: 1.25rem 2.5rem;
+  }
+
+  .loading-indicator {
+    right: 1.5rem;
+  }
+
+  .clear-button {
+    right: 1.5rem;
+    width: 32px;
+    height: 32px;
+  }
+
+  .clear-icon {
+    font-size: 28px;
+  }
+
+  .error-message {
+    font-size: 1rem;
+    padding: 1rem 1.25rem;
   }
 
   .eligible-message,
@@ -604,9 +910,31 @@ onUnmounted(() => {
 }
 
 @media (min-width: 1024px) {
+  .input-instruction {
+    font-size: 1.375rem;
+  }
+
+  .election-department-info {
+    font-size: 1.125rem;
+  }
+
   .address-input {
     font-size: 1.375rem;
     padding: 1.75rem;
+    padding-right: 4.5rem;
+  }
+
+  .search-button {
+    font-size: 1.375rem;
+    padding: 1.5rem 3rem;
+  }
+
+  .loading-indicator {
+    right: 1.75rem;
+  }
+
+  .clear-button {
+    right: 1.75rem;
   }
 }
 </style>

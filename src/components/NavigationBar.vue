@@ -221,8 +221,10 @@ onUnmounted(() => {
 }
 
 .nav-links.open {
-  max-height: 100vh;
+  max-height: calc(100vh - 60px);
   padding: 1rem 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav-links li {
