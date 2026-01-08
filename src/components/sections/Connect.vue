@@ -41,8 +41,10 @@
         <div class="upcoming-events">
           <h3>Upcoming Public Events:</h3>
           <ul>
-            <li><strong>Date TBD:</strong> Coffee Hour Meet & Greet</li>
-            <li><strong>Date TBD:</strong> Community Information Session</li>
+            <li>
+              <strong>Saturday, Jan 24th 2-4pm:</strong> Coffee + Conversation
+              at the Manitou Springs Public Library
+            </li>
           </ul>
         </div>
       </div>
