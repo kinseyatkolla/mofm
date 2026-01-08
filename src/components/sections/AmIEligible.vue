@@ -86,6 +86,15 @@
           >
             <strong>Not Eligible</strong>
             <p>This address is not in an eligible voting district.</p>
+            <p>
+              If you are not an eligible voter, you can still help! Please talk
+              with your neighbors and other Manitou residents about this
+              important issue that impacts the whole community. Please use
+              talking points from this website, our social media, and from our
+              community events. Please
+              <a href="/#connect">contact us</a> if you want support in reaching
+              out to your neighbors.
+            </p>
           </div>
         </div>
         <div class="boundary-map-container">
@@ -839,10 +848,10 @@ onUnmounted(() => {
 .not-eligible-message {
   margin-top: 1.5rem;
   padding: 1.5rem;
-  background-color: #f8d7da;
-  border: 2px solid #dc3545;
+  background-color: #e9ecef;
+  border: 2px solid #adb5bd;
   border-radius: 8px;
-  color: #721c24;
+  color: #495057;
   font-size: 1.25rem;
   text-align: center;
   animation: fadeIn 0.3s ease;
@@ -856,9 +865,26 @@ onUnmounted(() => {
 }
 
 .not-eligible-message p {
-  margin: 0;
+  margin: 0.75rem 0 0 0;
   font-size: 1rem;
   opacity: 0.9;
+  text-align: left;
+}
+
+.not-eligible-message p:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.not-eligible-message a {
+  color: var(--brand-primary, #4f357f);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.not-eligible-message a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 @keyframes fadeIn {
@@ -930,6 +956,15 @@ onUnmounted(() => {
 
   .not-eligible-message p {
     font-size: 1.125rem;
+  }
+
+  .not-eligible-message {
+    text-align: left;
+  }
+
+  .not-eligible-message strong {
+    text-align: center;
+    display: block;
   }
 }
 
