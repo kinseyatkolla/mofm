@@ -12,10 +12,10 @@
         </p>
         <div class="contact-info">
           <ul>
-            <li>
+            <!-- <li>
               <strong>Phone:</strong>
               <a href="tel:+17193187936">(719) 318-7936</a>
-            </li>
+            </li> -->
             <li>
               <strong>Email:</strong>
               <a href="mailto:movingonfrommetro@gmail.com"
@@ -40,12 +40,23 @@
         </div>
         <div class="upcoming-events">
           <h3>Upcoming Public Events:</h3>
+          <p>
+            Join members of the Moving on from Metro Committee and other
+            community members to learn more about this issue and get your
+            questions answered.
+          </p>
           <ul>
             <li>
-              <strong>Saturday, Jan 24th 2-4pm:</strong> Coffee + Conversation
-              at the Manitou Springs Public Library
+              <strong>Saturday, January 24th, 2 - 4 pm:</strong> Coffee +
+              Conversation at the Manitou Springs Public Library. 701 Manitou
+              Ave.
+            </li>
+            <li>
+              <strong>Sunday, February 8th, 2 - 4 pm:</strong> Coffee +
+              Conversation at the Manitou Art Center (MAC). 513 Manitou Ave.
             </li>
           </ul>
+          <p>Other events coming soon, stay tuned!</p>
         </div>
       </div>
     </div>

@@ -6,11 +6,11 @@
       </div>
       <div class="section-content">
         <p>
-          We will be hosting coffee hour meet and greets to answer questions
-          about the City's Dissolution Plan, and will be sending out postcard
-          mailings with more information. Please stay tuned to this website,
-          your mailbox and our social media for details about the coffee hours
-          and other opportunities to connect.
+          We will be hosting coffee hour conversations to answer questions about
+          the City's Dissolution Plan, and will be sending out postcard mailings
+          with more information. Please stay tuned to this website, your mailbox
+          and our social media for details about the coffee hours and other
+          opportunities to connect.
         </p>
         <p>
           Members of our committee are also available to talk with members of

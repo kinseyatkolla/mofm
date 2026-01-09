@@ -9,11 +9,7 @@
           The mission of the Metro District has been accomplished. The City is
           well positioned to more efficiently and affordably manage parking
           infrastructure city-wide, while providing expanded parking and
-          accessibility benefits (such as returning 76 permitted parking spots
-          removed by the District) to residents and business owners, as well as
-          boost downtown infrastructure and beautification initiatives, including
-          the extension of the creek walk trail through the Metro District
-          boundaries.
+          accessibility benefits.
         </p>
       </div>
       <div class="section-content">
