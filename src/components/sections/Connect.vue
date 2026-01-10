@@ -30,13 +30,13 @@
                 rel="noopener noreferrer"
                 >Instagram: @movingonfrommetro</a
               >
-              <!-- <br />
+              <br />
               <a
-                href="https://www.facebook.com/movingonfrommetro"
+                href="https://www.facebook.com/p/Moving-On-From-Metro-61586078616693/"
                 target="_blank"
                 rel="noopener noreferrer"
                 >Facebook: @movingonfrommetro</a
-              > -->
+              >
             </li>
             <li>
               <strong>Mailing Address:</strong><br />
@@ -44,26 +44,6 @@
               Manitou Springs, CO 80829
             </li>
           </ul>
-        </div>
-        <div class="upcoming-events">
-          <h3>Upcoming Public Events:</h3>
-          <p>
-            Join members of the Moving on from Metro Committee and other
-            community members to learn more about this issue and get your
-            questions answered.
-          </p>
-          <ul>
-            <li>
-              <strong>Saturday, January 24th, 2 - 4 pm:</strong> Coffee +
-              Conversation at the Manitou Springs Public Library. 701 Manitou
-              Ave.
-            </li>
-            <li>
-              <strong>Sunday, February 8th, 2 - 4 pm:</strong> Coffee +
-              Conversation at the Manitou Art Center (MAC). 513 Manitou Ave.
-            </li>
-          </ul>
-          <p>Other events coming soon, stay tuned!</p>
         </div>
       </div>
     </div>
@@ -76,8 +56,7 @@ const subtitle = null; // Set to null or remove if not needed
 </script>
 
 <style scoped>
-.contact-info,
-.upcoming-events {
+.contact-info {
   margin-top: 2rem;
   margin-bottom: 1.5rem;
 }
@@ -104,27 +83,5 @@ const subtitle = null; // Set to null or remove if not needed
   font-size: 0.9em;
   color: var(--text-secondary);
   font-style: italic;
-}
-
-.upcoming-events h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--brand-primary);
-  margin-bottom: 1rem;
-}
-
-.upcoming-events ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-.upcoming-events li {
-  margin-bottom: 0.75rem;
-}
-
-@media (min-width: 768px) {
-  .upcoming-events h3 {
-    font-size: 1.75rem;
-  }
 }
 </style>

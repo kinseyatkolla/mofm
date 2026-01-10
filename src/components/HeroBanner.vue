@@ -7,6 +7,7 @@
         class="banner-image"
       />
     </div>
+    <h1 class="vote-header">🗳️ Vote YES by March 3rd</h1>
   </section>
 </template>
 
@@ -54,6 +55,26 @@
 @media (min-width: 1024px) {
   .banner-image {
     max-height: 600px;
+  }
+}
+
+.vote-header {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 200;
+  margin-top: 1rem;
+  color: grey;
+}
+
+@media (min-width: 768px) {
+  .vote-header {
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vote-header {
+    font-size: 3rem;
   }
 }
 </style>

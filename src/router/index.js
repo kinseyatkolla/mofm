@@ -21,7 +21,15 @@ const router = createRouter({
       name: 'History',
       component: History
     }
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    // If there's a saved position (e.g., browser back button), use it
+    if (savedPosition) {
+      return savedPosition
+    }
+    // Otherwise, scroll to top
+    return { top: 0, behavior: 'smooth' }
+  }
 })
 
 export default router

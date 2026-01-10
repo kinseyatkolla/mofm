@@ -9,6 +9,7 @@
     <Who />
     <WhenHow />
     <HowLearn />
+    <UpcomingEvents />
     <Connect />
     <!-- <Endorsements /> -->
   </div>
@@ -24,6 +25,7 @@ import AmIEligible from "../components/sections/AmIEligible.vue";
 import Who from "../components/sections/Who.vue";
 import WhenHow from "../components/sections/WhenHow.vue";
 import HowLearn from "../components/sections/HowLearn.vue";
+import UpcomingEvents from "../components/sections/UpcomingEvents.vue";
 import Connect from "../components/sections/Connect.vue";
 // import Endorsements from "../components/sections/Endorsements.vue";
 </script>

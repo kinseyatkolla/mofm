@@ -2,7 +2,7 @@
   <nav class="navbar" :class="{ 'menu-open': isMenuOpen }">
     <div class="navbar-container">
       <div class="navbar-brand">
-        <router-link to="/" @click="closeMenu"
+        <router-link to="/" @click="handleBrandClick"
           >Moving on from Metro</router-link
         >
       </div>
@@ -21,6 +21,9 @@
 
       <!-- Navigation links -->
       <ul class="nav-links" :class="{ open: isMenuOpen }">
+        <li>
+          <a href="/#how-learn" @click="handleNavClick">Get Involved</a>
+        </li>
         <li>
           <a href="/#what-moving" @click="handleNavClick"
             >What is Moving on from Metro?</a
@@ -55,7 +58,9 @@
           >
         </li>
         <li>
-          <a href="/#how-learn" @click="handleNavClick">How do I learn more?</a>
+          <a href="/#upcoming-events" @click="handleNavClick"
+            >Upcoming Events</a
+          >
         </li>
         <li>
           <a href="/#connect" @click="handleNavClick">Connect with us</a>
@@ -91,6 +96,19 @@ const toggleMenu = () => {
 
 const closeMenu = () => {
   isMenuOpen.value = false;
+};
+
+const handleBrandClick = (event) => {
+  closeMenu();
+
+  // If already on the index page, scroll to top instead of navigating
+  if (route.path === "/") {
+    event.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
 };
 
 const handleNavClick = async (event) => {
