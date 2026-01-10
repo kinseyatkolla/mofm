@@ -23,13 +23,20 @@
               >
             </li>
             <li>
-              <strong>Social Media:</strong>
+              <strong>Social Media:</strong><br />
               <a
                 href="https://www.instagram.com/movingonfrommetro"
                 target="_blank"
                 rel="noopener noreferrer"
                 >Instagram: @movingonfrommetro</a
               >
+              <!-- <br />
+              <a
+                href="https://www.facebook.com/movingonfrommetro"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Facebook: @movingonfrommetro</a
+              > -->
             </li>
             <li>
               <strong>Mailing Address:</strong><br />
