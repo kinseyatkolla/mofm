@@ -45,6 +45,10 @@
             </li>
           </ul>
         </div>
+        <p>
+          Paid for by Moving On From Metro Issue Committee | Cheyene Grow,
+          Registered Agent
+        </p>
       </div>
     </div>
   </section>
