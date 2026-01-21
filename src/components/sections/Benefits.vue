@@ -14,6 +14,9 @@
       <div class="section-content">
         <ul>
           <li>
+            Free parking after 6 p.m. in both Wichita and Schmishny lots
+          </li>
+          <li>
             76 parking dedicated spots restored for residents and business owner
             permit holders
           </li>

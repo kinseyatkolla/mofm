@@ -22,7 +22,7 @@
         </p>
         <p>
           The Moving on from Metro Issue Committee is asking eligible voters in
-          the Metro District to vote YES on March 3rd for the City's Plan for
+          the Metro District to vote YES for the City's Plan for
           Metro District Dissolution, which will dissolve the Metro District and
           consolidate the properties under the City's Mobility and Parking
           Enterprise.

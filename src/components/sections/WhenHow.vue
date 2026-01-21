@@ -6,15 +6,13 @@
       </div>
       <div class="section-content">
         <p>
-          Voting will happen through a special election on March 3rd. Eligible
-          voters will receive a ballot in the mail. Details are still pending on
-          when ballots are expected to arrive and if it will be a mail-in
-          election only. We will update this site with further details.
+          Voting will happen through a special election by <span style="font-weight: bold;">mail-in voting only</span>. Eligible voters will receive a ballot in the mail. Ballots should be arriving to voters between February 12th - February 20th. There is NO local drop box for this special election. 
         </p>
         <p>
-          The Plan for Metro District Dissolution will be the only issue on the
-          March 3rd ballot.
+          <span style="font-weight: bold;">Ballots must be postmarked by March 3rd, the election date.</span> We recommend getting your ballot in the mail no later than Tuesday, February 24th if at all possible. 
         </p>
+        <p>The Dissolution of the Manitou Springs Metropolitan District will be the ONLY issue on the March 3rd ballot. You can either vote YES/FOR, or NO/AGAINST. </p>
+    <p>There will be a secrecy envelop you will place your completed ballot into, and you will need to sign your envelope. <span style="font-weight: bold;">Read all instructions when you receive your ballot in the mail in February. </span></p>
       </div>
     </div>
   </section>

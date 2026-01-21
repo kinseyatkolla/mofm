@@ -6,7 +6,7 @@
       </div>
       <div class="section-content">
         <ul class="action-list">
-          <li>Vote YES on 5A by March 3rd</li>
+          <li>Vote YES for the Dissolution of the District</li>
           <li>
             Attend a public event (see
             <a href="/#upcoming-events" @click="handleUpcomingEventsClick"

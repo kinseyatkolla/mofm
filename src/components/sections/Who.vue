@@ -7,7 +7,7 @@
       </div>
       <div class="section-content">
         <p>
-          Though only a select few can vote on this issue on March 3rd, all
+          Though only a select few can vote on this issue, all
           residents, businesses, and visitors of Manitou Springs will benefit
           from this plan.
         </p>
