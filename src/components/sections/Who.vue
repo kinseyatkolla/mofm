@@ -16,7 +16,7 @@
           The Moving on from Metro Issue Committee is comprised of a group of
           residents interested in mobility and parking issues that impact our
           community. Campaign committee members include Manitou residents Wren
-          Almitra (Treasurer), Helene Gallaway, Cheyenne Grow (Registered
+          Almitra (Treasurer), Helene Gallaway, Cheyene Grow (Registered
           Agent), Natalie Johnson, John Shada, Karl Stang, and Kinsey Watts.
         </p>
         <p>
