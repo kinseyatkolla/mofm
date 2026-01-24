@@ -25,10 +25,10 @@
             <li>
               <strong>Social Media:</strong><br />
               <a
-                href="https://www.instagram.com/movingonfrommetro"
+                href="https://www.instagram.com/movingonfrommetrodistrict"
                 target="_blank"
                 rel="noopener noreferrer"
-                >Instagram: @movingonfrommetro</a
+                >Instagram: @movingonfrommetrodistrict</a
               >
               <br />
               <a
