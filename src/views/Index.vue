@@ -5,6 +5,7 @@
     <WhatMetro />
     <Why />
     <Benefits />
+    <DowntownParking />
     <AmIEligible />
     <Who />
     <WhenHow />
@@ -21,6 +22,7 @@ import WhatMoving from "../components/sections/WhatMoving.vue";
 import WhatMetro from "../components/sections/WhatMetro.vue";
 import Why from "../components/sections/Why.vue";
 import Benefits from "../components/sections/Benefits.vue";
+import DowntownParking from "../components/sections/DowntownParking.vue";
 import AmIEligible from "../components/sections/AmIEligible.vue";
 import Who from "../components/sections/Who.vue";
 import WhenHow from "../components/sections/WhenHow.vue";

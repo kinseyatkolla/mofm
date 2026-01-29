@@ -45,6 +45,11 @@
           >
         </li>
         <li>
+          <a href="/#downtown-parking" @click="handleNavClick"
+            >Downtown Parking Benefit Program</a
+          >
+        </li>
+        <li>
           <a href="/#am-i-eligible" @click="handleNavClick">Am I Eligible?</a>
         </li>
         <li>

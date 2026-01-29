@@ -14,10 +14,10 @@
       </div>
       <div class="section-content">
         <p>
-          The City is grateful for the work the Metro District has accomplished
-          over the past 36 years and has recently developed a comprehensive Plan
-          to dissolve the Metro District and align its operations and property
-          management into the City's Transportation Master Plan.
+          The City has recently developed a comprehensive Plan to dissolve the
+          Metro District and align its operations and property management into
+          the City’s Transportation Master Plan. This plan was approved by a
+          judge in November.
         </p>
         <p>With voter approval, the City's Plan will:</p>
         <ul>
@@ -55,8 +55,7 @@
           reinvests parking revenue into downtown beautification and
           infrastructure projects that the District is unable to provide; and
           provides a proactive, actionable plan for the District-owned Ute Pass
-          Motel, which was boarded up nearly two years ago after the District
-          acquired it.
+          Motel, which was boarded up soon after the District acquired it.
         </p>
       </div>
     </div>

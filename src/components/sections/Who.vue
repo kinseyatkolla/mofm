@@ -7,17 +7,17 @@
       </div>
       <div class="section-content">
         <p>
-          Though only a select few can vote on this issue, all
-          residents, businesses, and visitors of Manitou Springs will benefit
-          from this plan.
+          Though only a select few can vote on this issue, all residents,
+          businesses, and visitors of Manitou Springs will benefit from this
+          plan.
         </p>
         <p>
           <strong>Moving on from Metro Issue Committee</strong><br />
           The Moving on from Metro Issue Committee is comprised of a group of
           residents interested in mobility and parking issues that impact our
           community. Campaign committee members include Manitou residents Wren
-          Almitra (Treasurer), Helene Gallaway, Cheyene Grow (Registered
-          Agent), Natalie Johnson, John Shada, Karl Stang, and Kinsey Watts.
+          Almitra (Treasurer), Helene Gallaway, Cheyene Grow (Registered Agent),
+          Natalie Johnson, John Shada, Karl and Joan Stang, and Kinsey Watts.
         </p>
         <p>
           <strong>Eligible Voters</strong><br />
@@ -40,15 +40,21 @@
         <p>
           <strong>The City of Manitou Springs</strong><br />
           The City of Manitou Springs City Council, Mayor and City
-          administration have proposed the Plan for Metro District Dissolution,
-          which eligible voters will have the opportunity to vote on in March,
-          2026.
+          administration have proposed the Plan for Metro District Dissolution.
+          In November a judge approved the Plan to be put on the ballot in a
+          special election, to be held March 3rd. (Voting will only happen by
+          mail, there is NO local drop box.)
         </p>
         <p>
           On December 2nd, 2025, City Council read and approved "A resolution of
           the City of Manitou Springs City Council, urging the registered
           electors of Manitou Springs Metropolitan District to vote "YES" on the
           City's Plan for Dissolution of the Metropolitan District.
+        </p>
+        <p>
+          On Friday, January 23rd the City passed Resolution 0626 that outlines
+          the creation of a Downtown Parking Benefit Program upon dissolution of
+          the Metro District.
         </p>
         <p>
           <strong>The Mobility and Parking Enterprise</strong><br />
