@@ -81,6 +81,11 @@
             >History of the Metro District</router-link
           >
         </li>
+        <li>
+          <router-link to="/mayorletter" @click="closeMenu"
+            >Mayor Letter</router-link
+          >
+        </li>
       </ul>
     </div>
   </nav>

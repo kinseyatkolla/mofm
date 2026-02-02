@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Index from '../views/Index.vue'
 import FAQ from '../views/FAQ.vue'
 import History from '../views/History.vue'
+import MayorLetter from '../views/MayorLetter.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/history',
       name: 'History',
       component: History
+    },
+    {
+      path: '/mayorletter',
+      name: 'MayorLetter',
+      component: MayorLetter
     }
   ],
   scrollBehavior(to, from, savedPosition) {
